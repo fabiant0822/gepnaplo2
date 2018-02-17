@@ -80,12 +80,40 @@ public class Gepnaplo2 extends javax.swing.JFrame {
         try (Connection kapcs = DriverManager.getConnection(dbUrl, user, pass);
                 PreparedStatement parancs = kapcs.prepareStatement(lekerdez());
                 ResultSet eredmeny = parancs.executeQuery()) {
+            tm.setRowCount(0); //sorok törlése
+            while (eredmeny.next()) {
+                Object sor[] = {
+                    eredmeny.getString("felhasznalo"),
+                    eredmeny.getString("ido"),
+                    eredmeny.getString("nev"),
+                    eredmeny.getString("allapot"),
+                    eredmeny.getString("osztaly"),
+                    eredmeny.getString("iskola")
+                };
+                tm.addRow(sor);
+                }
             
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage());
             System.exit(0);
         }
     }
+    
+    private void torol() {
+        final String dbUrl = "jdbc:mysql://" + t_ip + ":3306/gepnaplo"
+                + "?useUnicode=true&characterEncoding=UTF-8";
+        final String user = t_user;
+        final String pass = "tanar" + t_pass;
+        final String s = "DELETE FROM gepek WHERE DATEDIFF(NOW(),ido)>30";
+        try (Connection kapcs = DriverManager.getConnection(dbUrl, user, pass);
+                PreparedStatement parancs = kapcs.prepareStatement(s)) {
+            parancs.executeUpdate(s);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage());
+            System.exit(0);
+        }
+    }
+    
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -112,6 +140,11 @@ public class Gepnaplo2 extends javax.swing.JFrame {
 
         cbxIdo.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
         cbxIdo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Ezen az órán", "Ma", "7 napja", "30 napja" }));
+        cbxIdo.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cbxIdoItemStateChanged(evt);
+            }
+        });
         cbxIdo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cbxIdoActionPerformed(evt);
@@ -120,14 +153,29 @@ public class Gepnaplo2 extends javax.swing.JFrame {
 
         txtNevszuro.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
         txtNevszuro.setText("%");
+        txtNevszuro.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtNevszuroActionPerformed(evt);
+            }
+        });
 
         chkProb.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
         chkProb.setMnemonic('P');
         chkProb.setText("Csak a problémások");
+        chkProb.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                chkProbItemStateChanged(evt);
+            }
+        });
 
         btnFrissit.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
         btnFrissit.setMnemonic('F');
         btnFrissit.setText("Frissítés");
+        btnFrissit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnFrissitActionPerformed(evt);
+            }
+        });
 
         tblGepek.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
         tblGepek.setModel(new javax.swing.table.DefaultTableModel(
@@ -180,12 +228,13 @@ public class Gepnaplo2 extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cbxIdo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtNevszuro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(chkProb)
-                    .addComponent(btnFrissit)
-                    .addComponent(txtGepszuro))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtGepszuro)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(cbxIdo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtNevszuro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(chkProb)
+                        .addComponent(btnFrissit)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 434, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -200,8 +249,24 @@ public class Gepnaplo2 extends javax.swing.JFrame {
     }//GEN-LAST:event_cbxIdoActionPerformed
 
     private void txtGepszuroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtGepszuroActionPerformed
-        // TODO add your handling code here:
+        beolvas();
     }//GEN-LAST:event_txtGepszuroActionPerformed
+
+    private void btnFrissitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFrissitActionPerformed
+        beolvas();
+    }//GEN-LAST:event_btnFrissitActionPerformed
+
+    private void cbxIdoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbxIdoItemStateChanged
+        beolvas();
+    }//GEN-LAST:event_cbxIdoItemStateChanged
+
+    private void chkProbItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_chkProbItemStateChanged
+        beolvas();
+    }//GEN-LAST:event_chkProbItemStateChanged
+
+    private void txtNevszuroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNevszuroActionPerformed
+        beolvas();
+    }//GEN-LAST:event_txtNevszuroActionPerformed
 
     /**
      * @param args the command line arguments
