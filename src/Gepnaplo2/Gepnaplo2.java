@@ -28,6 +28,40 @@ public class Gepnaplo2 extends javax.swing.JFrame {
             System.exit(0);
         }
     }
+    
+    private String lekerdez() {
+        String q = "";
+        if (!txtGepszuro.getText().isEmpty()) {
+            q = q + " felhasznalo LIKE '" + txtGepszuro.getText() + "' AND ";
+        }
+        switch (cbxIdo.getSelectedIndex()) {
+            case 0: // ezen az órán
+                q = q + " TIMEDIFF(NOW(),ido)<'00:45' AND";
+                break;
+            case 1: // ma
+                q = q + " DATE(ido)=DATE(NOW()) AND";
+                break;
+            case 2: // 7 napja
+                q = q + " DATEDIFF(NOW(),ido)<=7 AND";
+                break;
+            case 3: // 30 napja
+                q = q + " DATEDIFF(NOW(),ido)<=30 AND";
+                break;
+        }
+        
+         if (!txtNevszuro.getText().isEmpty()) {
+            q = q + " nev LIKE '" + txtNevszuro.getText() + "' AND ";
+         }
+         
+         if (chkProb.isSelected()) {
+             q = q + " allapot NOT LIKE 'Rendben%'";
+         } else {
+             q = q + " allapot LIKE '%'";
+         }
+         
+         return "SELECT felhasznalo,iskola,osztaly,nev,ido,allapot "
+                 + "FROM gepek WHERE" + q + " ORDER BY ido DESC;";
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
