@@ -1,9 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Gepnaplo2;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -11,12 +11,22 @@ package Gepnaplo2;
  */
 public class Gepnaplo2 extends javax.swing.JFrame {
 
-    /**
-     * Creates new form Gepnaplo2
-     */
+    Properties tulajdonsagok = new Properties();
+    String t_ip, t_user, t_pass;
+            
     public Gepnaplo2() {
         initComponents();
         cbxIdo.requestFocus();
+        // tulajdonságok beolvasása
+        try (FileInputStream be = new FileInputStream("config.properties")) {
+            tulajdonsagok.load(be);
+            t_ip = tulajdonsagok.getProperty("ip");
+            t_user = tulajdonsagok.getProperty("user");
+            t_pass = tulajdonsagok.getProperty("pass");
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage());
+            System.exit(0);
+        }
     }
 
     /**
@@ -97,9 +107,9 @@ public class Gepnaplo2 extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(txtGepszuro, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
