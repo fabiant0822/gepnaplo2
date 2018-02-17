@@ -33,6 +33,8 @@ public class Gepnaplo2 extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, ex.getMessage());
             System.exit(0);
         }
+        beolvas();
+        torol();
     }
     
     private String lekerdez() {
